@@ -1,1 +1,1 @@
-__author__ = 'ptrus'
+__author__ = 'ptrus, nanguage'
