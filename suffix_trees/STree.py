@@ -1,17 +1,28 @@
-import sys
+ASCII_SYMBOLS = ['$', '#'] + [chr(i) for i in range(45, 58)]
+UNICODE_SYMBOLS = [chr(i) for i in list(range(0xE000,0xF8FF+1)) + list(range(0xF0000,0xFFFFD+1)) + list(range(0x100000, 0x10FFFD+1))]
 
 
 class STree():
     """Class representing the suffix tree."""
-    def __init__(self, input=''):
+    def __init__(self, input='', end_symbol_set='ascii'):
         self.root = _SNode()
         self.root.depth = 0
         self.root.idx = 0
         self.root.parent = self.root
         self.root._add_suffix_link(self.root)
 
-        if not input == '':
+        self.end_symbol_set = end_symbol_set
+        self._check_symbol_set(input)
+
+        if input:
            self.build(input)
+
+    def _check_symbol_set(self, input):
+        if self.end_symbol_set == 'ascii':
+            for c in ASCII_SYMBOLS:
+                if c in input:
+                    self.end_symbol_set = 'unicode'
+                    break
 
     def _check_input(self, input):
         """Checks the validity of the input.
@@ -34,18 +45,23 @@ class STree():
 
         :param x: String or List of Strings
         """
-        type = self._check_input(x)
+        type_ = self._check_input(x)
 
-        if type == 'st':
+        if type_ == 'st':
             x += next(self._terminalSymbolsGenerator())
             self._build(x)
-        if type == 'gst':
+        if type_ == 'gst':
             self._build_generalized(x)
 
-    def _build(self, x):
+    def _build(self, x, algorithm="McCreight"):
         """Builds a Suffix tree."""
         self.word = x
-        self._build_McCreight(x)
+        if algorithm == "McCreight":
+            self._build_McCreight(x)
+        elif algorithm == "Ukkonen":
+            self._build_Ukkonen(x)
+        else:
+            raise NotImplementedError()
 
     def _build_McCreight(self, x):
         """Builds a Suffix tree using McCreight O(n) algorithm.
@@ -243,13 +259,13 @@ class STree():
         Unicode Private Use Area U+E000..U+F8FF is used to ensure that terminal symbols
         are not part of the input string.
         """
-        py2 = sys.version[0] < '3'
-        UPPAs = list(list(range(0xE000,0xF8FF+1)) + list(range(0xF0000,0xFFFFD+1)) + list(range(0x100000, 0x10FFFD+1)))
-        for i in UPPAs:
-            if py2:
-                yield(unichr(i))
-            else:
-                yield(chr(i))
+        if self.end_symbol_set == "unicode":
+            symbol_set = UNICODE_SYMBOLS
+        else:
+            symbol_set = ASCII_SYMBOLS
+
+        for c in symbol_set:
+            yield(c)
         raise ValueError("To many input strings.")
 
 
@@ -279,7 +295,7 @@ class _SNode():
             return False
 
     def _get_transition_link(self, suffix):
-        for node,_suffix in self.transition_links:
+        for node, _suffix in self.transition_links:
             if _suffix == '__@__' or suffix == _suffix:
                 return node
         return False
@@ -288,10 +304,10 @@ class _SNode():
         tl = self._get_transition_link(suffix)
         if tl: # TODO: imporve this.
             self.transition_links.remove((tl,suffix))
-        self.transition_links.append((snode,suffix))
+        self.transition_links.append((snode, suffix))
 
     def _has_transition(self, suffix):
-        for node,_suffix in self.transition_links:
+        for node, _suffix in self.transition_links:
             if _suffix == '__@__' or suffix == _suffix:
                 return True
         return False
