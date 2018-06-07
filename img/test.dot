@@ -1,0 +1,43 @@
+digraph {
+	"0, 14" [shape=box]
+	root
+	"1, 13" [shape=box]
+	"b, 1"
+	"2, 12" [shape=box]
+	"3, 11" [shape=box]
+	"4, 10" [shape=box]
+	"e, 1"
+	"5, 9" [shape=box]
+	"6, 8" [shape=box]
+	"d, 3"
+	"7, 7" [shape=box]
+	"e, 2"
+	"8, 6" [shape=box]
+	"9, 5" [shape=box]
+	"d, 1"
+	"10, 4" [shape=box]
+	"k, 2"
+	"11, 3" [shape=box]
+	"12, 2" [shape=box]
+	"13, 1" [shape=box]
+	root -> "6, 8" [label="$"]
+	root -> "0, 14" [label="ATTGCC$"]
+	"k, 2" -> "11, 3" [label="#"]
+	root -> "d, 1" [label=G]
+	root -> "13, 1" [label="#"]
+	"e, 2" -> "4, 10" [label="$"]
+	"k, 2" -> "10, 4" [label="G#"]
+	"d, 3" -> "7, 7" [label="GGG#"]
+	"e, 2" -> "8, 6" [label="GGG#"]
+	"e, 1" -> "e, 2" [label=C]
+	"b, 1" -> "2, 12" [label="GCC$"]
+	"d, 3" -> "3, 11" [label="$"]
+	"d, 1" -> "d, 3" [label=CC]
+	"e, 1" -> "9, 5" [label="GGG#"]
+	root -> "b, 1" [label=T]
+	root -> "e, 1" [label=C]
+	"e, 1" -> "5, 9" [label="$"]
+	"d, 1" -> "k, 2" [label=G]
+	"d, 1" -> "12, 2" [label="#"]
+	"b, 1" -> "1, 13" [label="TGCC$"]
+}
