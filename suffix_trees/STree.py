@@ -11,6 +11,7 @@ class STree():
         self.root.parent = self.root
         self.root._add_suffix_link(self.root)
 
+        self.words = None
         self.end_symbol_set = end_symbol_set
         self._check_symbol_set(input)
 
@@ -145,7 +146,9 @@ class STree():
         """
         terminal_gen = self._terminalSymbolsGenerator()
 
-        _xs = ''.join([x + next(terminal_gen) for x in xs])
+        _xs = [x + next(terminal_gen) for x in xs]
+        self.words = _xs
+        _xs = ''.join(_xs)
         self.word = _xs
         self._generalized_word_starts(xs)
         self._build(_xs)
@@ -266,7 +269,6 @@ class STree():
     def _edgeLabel(self, node, parent):
         """Helper method, returns the edge label between a node and it's parent"""
         return self.word[node.idx + parent.depth : node.idx + node.depth]
-
 
     def _terminalSymbolsGenerator(self):
         """Generator of unique terminal symbols used for building the Generalized Suffix Tree.
