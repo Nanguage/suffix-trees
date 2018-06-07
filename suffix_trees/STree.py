@@ -71,50 +71,64 @@ class STree():
         Implementation based on:
         UH CS - 58093 String Processing Algorithms Lecture Notes
         """
-        u = self.root
+        node = self.root
         d = 0
         for i in range(len(x)):
-            while u.depth == d and u._has_transition(x[d+i]):
-                u = u._get_transition_link(x[d+i])
+            while node.depth == d and node._has_transition(x[d+i]):
+                node = node._get_transition_link(x[d+i])
                 d = d + 1
-                while d < u.depth and x[u.idx + d] == x[i + d]:
+                while d < node.depth and x[node.idx + d] == x[i + d]:
                     d = d + 1
-            if d < u.depth:
-                u = self._create_node(x, u, d)
-            self._create_leaf(x, i, u, d)
-            if not u._get_suffix_link():
-                self._compute_slink(x, u)
-            u = u._get_suffix_link()
+            if d < node.depth:
+                node = self._insert_node(x, node, d)
+            self._create_leaf(x, i, node, d)
+            if not node._get_suffix_link():
+                self._compute_slink(x, node)
+            node = node._get_suffix_link()
             d = d - 1
             if d < 0:
                 d = 0
 
-    def _create_node(self, x, u, d):
-        i = u.idx
-        p = u.parent
-        v = _SNode(idx=i, depth=d)
-        v._add_transition_link(u,x[i+d])
-        u.parent = v
-        p._add_transition_link(v, x[i+p.depth])
-        v.parent = p
-        return v
+    def _insert_node(self, input, node, depth):
+        """
+        Insert node between node and node.parent
 
-    def _create_leaf(self, x, i, u, d):
-        w = _SNode()
-        w.idx = i
-        w.depth = len(x) - i
-        u._add_transition_link(w, x[i + d])
-        w.parent = u
-        return w
+        node.parent -> new_node -> node
 
-    def _compute_slink(self, x, u):
-        d = u.depth
-        v = u.parent._get_suffix_link()
+        """
+        i = node.idx
+        p = node.parent
+        new_node = _SNode(idx=i, depth=depth)
+        new_node._add_transition_link(node, input[i+depth])
+        node.parent = new_node
+        p._add_transition_link(new_node, input[i+p.depth])
+        new_node.parent = p
+        return new_node
+
+    def _create_leaf(self, input, idx, node, depth):
+        """
+        create a leaf node
+
+        node -> leaf
+        """
+        leaf = _SNode()
+        leaf.idx = idx
+        leaf.depth = len(input) - idx
+        edge_label = input[idx + depth]
+        node._add_transition_link(leaf, edge_label)
+        leaf.parent = node
+        return leaf
+
+    def _compute_slink(self, input, node):
+        """
+        """
+        d = node.depth
+        v = node.parent._get_suffix_link()
         while v.depth < d - 1:
-            v = v._get_transition_link(x[u.idx + v.depth + 1])
+            v = v._get_transition_link(input[node.idx + v.depth + 1])
         if v.depth > d - 1:
-            v = self._create_node(x, v, d-1)
-        u._add_suffix_link(v)
+            v = self._insert_node(input, v, d-1)
+        node._add_suffix_link(v)
 
 
     def _build_Ukkonen(self, x):
@@ -123,8 +137,8 @@ class STree():
         Algorithm based on:
         Ukkonen, Esko. "On-line construction of suffix trees." - Algorithmica, 1995.
         """
-        # TODO.
         raise NotImplementedError()
+
 
     def _build_generalized(self, xs):
         """Builds a Generalized Suffix Tree (GST) from the array of strings provided.
